@@ -9,9 +9,8 @@ import (
 	"github.com/go-openapi/strfmt"
 
 	httptransport "github.com/go-openapi/runtime/client"
-	"github.com/hashicorp/terraform/terraform"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -51,7 +50,7 @@ func Provider() terraform.ResourceProvider {
 			"looker_content_metadata_access": resourceContentMetadataAccess(),
 			"looker_connection":              resourceConnection(),
 			"looker_project":                 resourceProject(),
-			"looker_git_deploy_key":          resourceGitDeployKey(),
+			"looker_project_git_deploy_key":  resourceProjectGitDeployKey(),
 			"looker_project_git_details":     resourceProjectGitDetails(),
 			"looker_user_attribute":          resourceUserAttribute(),
 		},
@@ -61,7 +60,7 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	transport := httptransport.New(d.Get("base_url").(string), "/api/3.0/", nil)
+	transport := httptransport.NewWithClient(d.Get("base_url").(string), "/api/3.0/", nil)
 	client := apiclient.New(transport, strfmt.Default)
 
 	clientID := d.Get("client_id").(string)
@@ -81,6 +80,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	log.Println("[INFO] token " + token)
 
 	authInfoWriter := httptransport.APIKeyAuth("Authorization", "header", "token "+token)
+	transport.
 	transport.DefaultAuthentication = authInfoWriter
 
 	authClient := apiclient.New(transport, strfmt.Default)

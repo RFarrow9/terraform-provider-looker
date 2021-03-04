@@ -8,7 +8,7 @@ import (
 	"github.com/go-openapi/strfmt"
 
 	apiclient "github.com/billtrust/looker-go-sdk/client"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceProjectGitDetails() *schema.Resource {
@@ -124,6 +124,7 @@ func resourceProjectGitDetailsExists(d *schema.ResourceData, m interface{}) (b b
 	client := m.(*apiclient.LookerAPI30Reference)
 
 	// TODO Not sure if we should always set session to "dev" instead of "production" when checking if it exists? will dev always show all dev+prod projects?
+	// Pretty sure it should be dev, shouldn't be messing with prod models via terraform?
 	err := updateSession(client, "dev")
 	if err != nil {
 		return false, err
